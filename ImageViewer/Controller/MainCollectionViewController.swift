@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Moya
 
 class MainCollectionViewController: UICollectionViewController {
 
@@ -20,10 +21,12 @@ class MainCollectionViewController: UICollectionViewController {
 
     let cellIdentifier = "cellIdentifier"
     let headerCellIdentifier = "headerCellIdentifier"
-    
+    let networkingProvider = MoyaProvider<NetworkingService>()
+    var photosArray : Photos?
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        search(for: "Uganda")
     }
     
     fileprivate func setupView(){
@@ -43,8 +46,28 @@ class MainCollectionViewController: UICollectionViewController {
         ])
     }
     
+    fileprivate func search(for term: String){
+        networkingProvider.request(.Search(term: term)) { (result) in
+            switch result{
+            case .success(let response):
+                do{
+                    let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
+                    self.photosArray = searchResults
+                }catch let error{
+                    print(error)
+                }
+            case .failure(let error):
+                print(error)
+                
+            }
+        }
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
+        let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
+        photosArray?.photos.forEach({
+            imageCell.titleLabel.text = $0.title
+        })
         return imageCell
     }
     
