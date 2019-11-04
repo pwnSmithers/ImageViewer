@@ -53,7 +53,9 @@ class MainCollectionViewController: UICollectionViewController {
                 do{
                     let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
                     self.photosArray = searchResults
-                    print(searchResults)
+                    //reload collection view data once data is returned from server
+                    self.collectionView.reloadData()
+
                 }catch let error{
                     print(error)
                 }
@@ -66,7 +68,14 @@ class MainCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
-   
+        photosArray?.photos.photo.forEach({
+            let viewModel = SearchViewModel(model: $0)
+            DispatchQueue.main.async {
+                print(viewModel.title)
+                imageCell.titleLabel.text = viewModel.title
+                
+            }
+        })
         return imageCell
     }
     

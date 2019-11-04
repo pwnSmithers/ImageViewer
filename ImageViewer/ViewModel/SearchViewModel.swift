@@ -10,7 +10,6 @@ import Foundation
 
 
 struct SearchViewModel {
-    
     let id : String
     let title: String
     
