@@ -99,6 +99,11 @@
 		9619C34C23703BE70001BFD2 /* ImageViewer */ = {
 			isa = PBXGroup;
 			children = (
+				9619C38123703E9D0001BFD2 /* ViewModel */,
+				9619C38023703E960001BFD2 /* Model */,
+				9619C37F23703E8D0001BFD2 /* Controller */,
+				9619C37E23703E830001BFD2 /* Constants */,
+				9619C37D23703E6F0001BFD2 /* API */,
 				9619C34D23703BE70001BFD2 /* AppDelegate.swift */,
 				9619C34F23703BE70001BFD2 /* SceneDelegate.swift */,
 				9619C35123703BE70001BFD2 /* ViewController.swift */,
@@ -126,6 +131,41 @@
 				9619C37123703BE90001BFD2 /* Info.plist */,
 			);
 			path = ImageViewerUITests;
+			sourceTree = "<group>";
+		};
+		9619C37D23703E6F0001BFD2 /* API */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		9619C37E23703E830001BFD2 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		9619C37F23703E8D0001BFD2 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		9619C38023703E960001BFD2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		9619C38123703E9D0001BFD2 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
