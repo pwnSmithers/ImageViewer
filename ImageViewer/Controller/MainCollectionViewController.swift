@@ -11,10 +11,24 @@ import UIKit
 
 class MainCollectionViewController: UICollectionViewController {
 
+    let cellIdentifier = "cellIdentifier"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.backgroundColor = .red
+        collectionView.backgroundColor = .green
         print("View has loaded")
+        collectionView.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
+    }
+    
+    
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
+        return imageCell
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 3
     }
     
 }
