@@ -26,7 +26,7 @@ class MainCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        search(for: "Uganda")
+        search(for: "league of legends")
     }
     
     fileprivate func setupView(){
@@ -53,6 +53,7 @@ class MainCollectionViewController: UICollectionViewController {
                 do{
                     let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
                     self.photosArray = searchResults
+                    print(searchResults)
                 }catch let error{
                     print(error)
                 }
@@ -65,9 +66,7 @@ class MainCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
-        photosArray?.photos.forEach({
-            imageCell.titleLabel.text = $0.title
-        })
+   
         return imageCell
     }
     

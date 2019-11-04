@@ -14,10 +14,10 @@ struct SearchViewModel {
     let id : String
     let title: String
     
-    init(model: Photo) {
-        let id = String(model.id)
-        self.id = id
-        let title = model.title
-        self.title = title
+    init(model: Image) {
+        let photoID = model.id
+        self.id = photoID
+        let photoTitle = model.title
+        self.title = photoTitle
     }
 }

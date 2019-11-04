@@ -18,7 +18,7 @@ extension NetworkingService: TargetType {
     var baseURL: URL {
         switch self {
         case .Search(let term):
-            let url = " https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(GlobalConstants.ApiKey)&text=\(term)&format=json&nojsoncallback=1"
+            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(GlobalConstants.ApiKey)&text=\(term)&format=json&nojsoncallback=1"
             let finalURL = url.replacingOccurrences(of: " ", with: "+")
             return URL(string: finalURL)!
         }

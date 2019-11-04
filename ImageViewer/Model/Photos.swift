@@ -9,10 +9,14 @@
 import Foundation
 
 struct Photos : Codable {
-    let photos : [Photo]
+    let photos : Photo
 }
 
 struct Photo : Codable {
-    let id : Int
-    let title : String
+    let photo : [Image]
+}
+
+struct Image : Codable {
+    let id : String
+    let title: String
 }
