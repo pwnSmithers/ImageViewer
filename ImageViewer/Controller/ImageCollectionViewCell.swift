@@ -27,16 +27,17 @@ class ImageCollectionViewCell: UICollectionViewCell {
     let imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
+        image.image = UIImage(named: "bear")
         return image
     }()
     
     fileprivate func setupView(){
         addSubview(imageView)
-        addSubview(titleLabel) 
+        addSubview(titleLabel)
         addConstraints([
             imageView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 10),
+            imageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             imageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 10),
            
             titleLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: 5),
@@ -50,3 +51,4 @@ class ImageCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
