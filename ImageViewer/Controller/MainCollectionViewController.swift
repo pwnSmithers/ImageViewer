@@ -78,15 +78,17 @@ class MainCollectionViewController: UICollectionViewController {
       return header
     }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let fullImageController = FullImageViewController()
+        print("Cell\(indexPath) clicked")
+        self.navigationController?.pushViewController(fullImageController, animated: true)
+    }
+    
 }
 
 
 extension MainCollectionViewController : UICollectionViewDelegateFlowLayout{
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: 200)
     }
-    
-    
-    
 }
