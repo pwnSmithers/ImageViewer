@@ -13,7 +13,7 @@ struct GlobalConstants {
     
 }
 
-struct CreateFlikrApi {
+struct CreateFlikrApiUrl {
     let farm : String
     let server : String
     let id : String

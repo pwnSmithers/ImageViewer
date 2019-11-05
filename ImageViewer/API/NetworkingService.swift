@@ -10,21 +10,21 @@ import Foundation
 import Moya
 
 enum NetworkingService{
-    case Search(term: String)
-    case recent
+    case Search(term: String, count: Int)
+    case recent(count: Int)
 }
 
 extension NetworkingService: TargetType {
 
     var baseURL: URL {
         switch self {
-        case .Search(let term):
-            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(GlobalConstants.ApiKey)&text=\(term)&format=json&nojsoncallback=1"
+        case .Search(let term, let count):
+            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(GlobalConstants.ApiKey)&text=\(term)&per_page=10&page=\(count)&format=json&nojsoncallback=1"
             let finalURL = url.replacingOccurrences(of: " ", with: "+")
             return URL(string: finalURL)!
             
-        case .recent:
-            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=\(GlobalConstants.ApiKey)&per_page=10&page=1&format=json&nojsoncallback=1"
+        case .recent(let count):
+            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=\(GlobalConstants.ApiKey)&per_page=10&page=\(count)&format=json&nojsoncallback=1"
             let finalURL = url.replacingOccurrences(of: " ", with: "+")
             return URL(string: finalURL)!
         }

@@ -11,6 +11,11 @@ import UIKit
 import Moya
 import Kingfisher
 
+enum ApiCallType {
+    case recent
+    case search
+}
+
 class MainCollectionViewController: UICollectionViewController {
 
     lazy var mainSearchBar : UISearchBar = {
@@ -24,16 +29,24 @@ class MainCollectionViewController: UICollectionViewController {
     let headerCellIdentifier = "headerCellIdentifier"
     let networkingProvider = MoyaProvider<NetworkingService>()
     var photosArray : Photos?
+    var photoArray = [Image]()
+    var pageCount = 1
+    var searchTerm : String?
+    var apiCallType : ApiCallType?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         //preload some images
-        loadImagesFromNetwork(count: 10, callType: .recent)
+        apiCallType = .recent
+        loadImagesFromNetwork(callType: .recent(count: 1))
     }
     
     fileprivate func setupView(){
         collectionView.backgroundColor = .white
         navigationItem.title = "Flickr"
+        
+        mainSearchBar.delegate = self
         
         navigationController?.navigationBar.tintColor = .black
         collectionView.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
@@ -49,14 +62,24 @@ class MainCollectionViewController: UICollectionViewController {
     }
     
     
-    fileprivate func loadImagesFromNetwork(count: Int, callType: NetworkingService){
+    fileprivate func loadImagesFromNetwork(callType: NetworkingService){
+        print("network call made")
         networkingProvider.request(callType) { (result) in
                     switch result{
                     case .success(let response):
                         do{
                             let photoResults = try JSONDecoder().decode(Photos.self, from: response.data)
-                            self.photosArray = photoResults
-                             
+                            //self.photosArray = photoResults
+                            //print(photoResults)
+                            let imagesArray = photoResults.photos.photo
+                            imagesArray.forEach {
+                                self.photoArray.append($0)
+                            }
+                            print(self.photoArray)
+//                            photoResults.photos.photo.forEach {
+//                                self.photoArray?.append($0)
+//                            }
+//                            print(self.photoArray)
                             //reload collection view data once data is returned from server
                             self.collectionView.reloadData()
                         }catch let error{
@@ -68,69 +91,56 @@ class MainCollectionViewController: UICollectionViewController {
                 }
     }
     
-//    fileprivate func loadRecentImages(){
-//        networkingProvider.request(.recent) { (result) in
-//               switch result{
-//               case .success(let response):
-//                   do{
-//                       let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
-//                       self.photosArray = searchResults
-//
-//                       //reload collection view data once data is returned from server
-//                       self.collectionView.reloadData()
-//                   }catch let error{
-//                       print(error)
-//                   }
-//               case .failure(let error):
-//                   print(error)
-//
-//               }
-//           }
-//    }
-    
-//    fileprivate func search(for term: String){
-//        networkingProvider.request(.Search(term: term)) { (result) in
-//            switch result{
-//            case .success(let response):
-//                do{
-//                    let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
-//                    self.photosArray = searchResults
-//                    //reload collection view data once data is returned from server
-//                    self.collectionView.reloadData()
-//
-//                }catch let error{
-//                    print(error)
-//                }
-//            case .failure(let error):
-//                print(error)
-//
-//            }
-//        }
-//    }
+    fileprivate func loadMoreImages(){
+            pageCount += 1
+            switch apiCallType {
+                   case .recent:
+                    loadImagesFromNetwork(callType: .recent(count: pageCount))
+                   case .search:
+                    if let search = searchTerm{
+                       loadImagesFromNetwork(callType: .Search(term: search, count: pageCount))
+                    }
+                   case .none:
+                       print("Nothing should happen")
+            }
+    }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
-        let photoDetails = photosArray?.photos.photo[indexPath.row]
-        if let photo = photoDetails {
-            let viewModel = SearchViewModel(model: photo)
-                 DispatchQueue.main.async {
-                     imageCell.titleLabel.text = viewModel.title
-                      let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
-                     imageCell.imageView.kf.indicatorType = .activity
-                     imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
-                     imageCell.imageView.contentMode = .scaleToFill
-                    imageCell.setCellShadow()
-                 }
-        }
+        //let photoDetails =
+//        if let photo = photoArray[indexPath.row] {
+//            print(photo)
+//            let viewModel = SearchViewModel(model: photo)
+//                 DispatchQueue.main.async {
+//                     imageCell.titleLabel.text = viewModel.title
+//                      let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
+//                     imageCell.imageView.kf.indicatorType = .activity
+//                     imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
+//                     imageCell.imageView.contentMode = .scaleToFill
+//                    imageCell.setCellShadow()
+//                 }
+//        }
+        guard !photoArray.isEmpty else{return imageCell}
+        let viewModel = SearchViewModel(model: photoArray[indexPath.row])
+                     DispatchQueue.main.async {
+                         imageCell.titleLabel.text = viewModel.title
+                          let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
+                         imageCell.imageView.kf.indicatorType = .activity
+                         imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
+                         imageCell.imageView.contentMode = .scaleToFill
+                        imageCell.setCellShadow()
+                     }
         return imageCell
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let photoArray = photosArray?.photos.photo{
-            return photoArray.count
-        }else{
-            return 3
-        }
+//        if let photoArray = photoArray{
+//            return photoArray.count
+//        }else{
+//            return 3
+//        }
+        guard !photoArray.isEmpty else{return 3}
+        return photoArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -150,19 +160,54 @@ class MainCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let photoDetails = photosArray?.photos.photo[indexPath.row]
+       
 
-        if let photo = photoDetails{
-            let photoUrl = CreateFlikrApi(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
-            let finalUrl = photoUrl.flickrPhotoUrlConstructor()
-            let fullImageController = FullImageViewController(photoUrl: finalUrl)
-            self.navigationController?.pushViewController(fullImageController, animated: true)
+//        if let photo = photoArray?[indexPath.row]{
+//            let photoUrl = CreateFlikrApiUrl(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
+//            let finalUrl = photoUrl.flickrPhotoUrlConstructor()
+//            let fullImageController = FullImageViewController(photoUrl: finalUrl)
+//            self.navigationController?.pushViewController(fullImageController, animated: true)
+//        }
+        
+        guard !photoArray.isEmpty else{return}
+        let photo = photoArray[indexPath.row]
+        let photoUrl = CreateFlikrApiUrl(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
+        let finalUrl = photoUrl.flickrPhotoUrlConstructor()
+        let fullImageController = FullImageViewController(photoUrl: finalUrl)
+        self.navigationController?.pushViewController(fullImageController, animated: true)
+        
+    }
+    
+    //to load more images when all preloaded ones have been loaded and displayed
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+//        if let imageArrayCount =  photoArray?.count{
+//            if indexPath.row == imageArrayCount - 3 {
+//                print("Hello, Hello")
+//                loadMoreImages()
+//            }
+//        }
+        guard !photoArray.isEmpty else{return}
+        let imageArrayCount = photoArray.count
+        if indexPath.row == imageArrayCount - 3 {
+            print("Hello, Hello")
+            loadMoreImages()
         }
     }
+    
+    
 }
 
 extension MainCollectionViewController : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: view.frame.width, height: 200)
+    }
+}
+
+extension MainCollectionViewController : UISearchBarDelegate{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let searchText = searchBar.text{
+            apiCallType = .search
+            loadImagesFromNetwork(callType: .Search(term: searchText, count: 1))
+        }
     }
 }
