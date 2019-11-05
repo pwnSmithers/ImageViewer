@@ -1,5 +1,5 @@
 //
-//  SearchViewModel.swift
+//  PhotosViewModel.swift
 //  ImageViewer
 //
 //  Created by Smithers on 04/11/2019.
@@ -9,7 +9,7 @@
 import Foundation
 
 
-struct SearchViewModel {
+struct PhotosViewModel {
     let id : String
     let title: String
     let owner: String
