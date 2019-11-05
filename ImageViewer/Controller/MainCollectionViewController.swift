@@ -121,7 +121,7 @@ class MainCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
         guard !photoArray.isEmpty else{return imageCell}
-        let viewModel = SearchViewModel(model: photoArray[indexPath.row])
+        let viewModel = PhotosViewModel(model: photoArray[indexPath.row])
                      DispatchQueue.main.async {
                          imageCell.titleLabel.text = viewModel.title
                           let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
