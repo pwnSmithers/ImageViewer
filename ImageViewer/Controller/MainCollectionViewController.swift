@@ -39,7 +39,7 @@ class MainCollectionViewController: UICollectionViewController {
         setupView()
         //preload some images
         apiCallType = .recent
-        loadImagesFromNetwork(callType: .recent(count: 1))
+        loadImagesFromNetwork(callType: .recent(count: pageCount))
     }
     
     fileprivate func setupView(){
@@ -63,23 +63,16 @@ class MainCollectionViewController: UICollectionViewController {
     
     
     fileprivate func loadImagesFromNetwork(callType: NetworkingService){
-        print("network call made")
         networkingProvider.request(callType) { (result) in
                     switch result{
                     case .success(let response):
                         do{
                             let photoResults = try JSONDecoder().decode(Photos.self, from: response.data)
-                            //self.photosArray = photoResults
-                            //print(photoResults)
                             let imagesArray = photoResults.photos.photo
                             imagesArray.forEach {
                                 self.photoArray.append($0)
                             }
                             print(self.photoArray)
-//                            photoResults.photos.photo.forEach {
-//                                self.photoArray?.append($0)
-//                            }
-//                            print(self.photoArray)
                             //reload collection view data once data is returned from server
                             self.collectionView.reloadData()
                         }catch let error{
@@ -107,19 +100,6 @@ class MainCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
-        //let photoDetails =
-//        if let photo = photoArray[indexPath.row] {
-//            print(photo)
-//            let viewModel = SearchViewModel(model: photo)
-//                 DispatchQueue.main.async {
-//                     imageCell.titleLabel.text = viewModel.title
-//                      let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
-//                     imageCell.imageView.kf.indicatorType = .activity
-//                     imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
-//                     imageCell.imageView.contentMode = .scaleToFill
-//                    imageCell.setCellShadow()
-//                 }
-//        }
         guard !photoArray.isEmpty else{return imageCell}
         let viewModel = SearchViewModel(model: photoArray[indexPath.row])
                      DispatchQueue.main.async {
@@ -134,11 +114,6 @@ class MainCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        if let photoArray = photoArray{
-//            return photoArray.count
-//        }else{
-//            return 3
-//        }
         guard !photoArray.isEmpty else{return 3}
         return photoArray.count
     }
@@ -160,15 +135,6 @@ class MainCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       
-
-//        if let photo = photoArray?[indexPath.row]{
-//            let photoUrl = CreateFlikrApiUrl(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
-//            let finalUrl = photoUrl.flickrPhotoUrlConstructor()
-//            let fullImageController = FullImageViewController(photoUrl: finalUrl)
-//            self.navigationController?.pushViewController(fullImageController, animated: true)
-//        }
-        
         guard !photoArray.isEmpty else{return}
         let photo = photoArray[indexPath.row]
         let photoUrl = CreateFlikrApiUrl(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
@@ -180,16 +146,9 @@ class MainCollectionViewController: UICollectionViewController {
     
     //to load more images when all preloaded ones have been loaded and displayed
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//        if let imageArrayCount =  photoArray?.count{
-//            if indexPath.row == imageArrayCount - 3 {
-//                print("Hello, Hello")
-//                loadMoreImages()
-//            }
-//        }
         guard !photoArray.isEmpty else{return}
         let imageArrayCount = photoArray.count
         if indexPath.row == imageArrayCount - 3 {
-            print("Hello, Hello")
             loadMoreImages()
         }
     }
@@ -206,6 +165,11 @@ extension MainCollectionViewController : UICollectionViewDelegateFlowLayout{
 extension MainCollectionViewController : UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text{
+            //save searchTerm to be used globally
+            searchTerm = searchText
+            //reset array and page count
+            photoArray.removeAll()
+            pageCount = 0
             apiCallType = .search
             loadImagesFromNetwork(callType: .Search(term: searchText, count: 1))
         }
