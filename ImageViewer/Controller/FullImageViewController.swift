@@ -11,7 +11,7 @@ import UIKit
 import Kingfisher
 
 class FullImageViewController: UIViewController {
-    
+    var photoUrl : URL?
     let fullImageView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage(named: "bear")
@@ -24,11 +24,26 @@ class FullImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        DispatchQueue.main.async {
-            self.fullImageView.kf.indicatorType = .activity
-            self.fullImageView.kf.setImage(with: URL(string: "https://farm66.staticflickr.com/65535/49008542706_c7f6d44d72.jpg"))
-             
+   
+    }
+    
+    init(photoUrl: URL?) {
+        self.photoUrl = photoUrl
+        super.init(nibName: nil, bundle: nil)
+        if let url = self.photoUrl{
+            display(image: url)
         }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    fileprivate func display(image withURl: URL) {
+        DispatchQueue.main.async {
+          self.fullImageView.kf.indicatorType = .activity
+           self.fullImageView.kf.setImage(with: withURl)
+           }
     }
     
     fileprivate func setupView(){

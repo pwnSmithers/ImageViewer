@@ -71,13 +71,14 @@ class MainCollectionViewController: UICollectionViewController {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
         let photoDetails = photosArray?.photos.photo[indexPath.row]
         if let photo = photoDetails {
-            let viewViewModel = SearchViewModel(model: photo)
+            let viewModel = SearchViewModel(model: photo)
                  DispatchQueue.main.async {
-                     imageCell.titleLabel.text = viewViewModel.title
-                      let photoUrl = "https://farm\(String(viewViewModel.farm)).staticflickr.com/\(viewViewModel.server)/\(viewViewModel.id)_\(viewViewModel.secret).jpg"
+                     imageCell.titleLabel.text = viewModel.title
+                      let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
                      imageCell.imageView.kf.indicatorType = .activity
                      imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
                      imageCell.imageView.contentMode = .scaleToFill
+                    imageCell.setCellShadow()
                  }
         }
         return imageCell
@@ -108,9 +109,14 @@ class MainCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let fullImageController = FullImageViewController()
-        print("Cell\(indexPath) clicked")
-        self.navigationController?.pushViewController(fullImageController, animated: true)
+        let photoDetails = photosArray?.photos.photo[indexPath.row]
+
+        if let photo = photoDetails{
+            let photoUrl = CreateFlikrApi(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
+            let finalUrl = photoUrl.flickrPhotoUrlConstructor()
+            let fullImageController = FullImageViewController(photoUrl: finalUrl)
+            self.navigationController?.pushViewController(fullImageController, animated: true)
+        }
     }
 }
 

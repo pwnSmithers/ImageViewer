@@ -10,4 +10,15 @@ import Foundation
 
 struct GlobalConstants {
     static let ApiKey = "073f547e067e953a932a6e64f59d5cd4"
+    
+}
+
+struct CreateFlikrApi {
+    let farm : String
+    let server : String
+    let id : String
+    let secret : String
+      func flickrPhotoUrlConstructor() -> URL{
+          return URL(string: "https://farm\(String(farm)).staticflickr.com/\(server)/\(id)_\(secret).jpg")!
+      }
 }
