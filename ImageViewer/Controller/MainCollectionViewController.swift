@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Moya
+import Kingfisher
 
 class MainCollectionViewController: UICollectionViewController {
 
@@ -68,19 +69,26 @@ class MainCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
-        photosArray?.photos.photo.forEach({
-            let viewModel = SearchViewModel(model: $0)
-            DispatchQueue.main.async {
-                print(viewModel.title)
-                imageCell.titleLabel.text = viewModel.title
-                
-            }
-        })
+        let photoDetails = photosArray?.photos.photo[indexPath.row]
+        if let photo = photoDetails {
+            let viewViewModel = SearchViewModel(model: photo)
+                 DispatchQueue.main.async {
+                     imageCell.titleLabel.text = viewViewModel.title
+                      let photoUrl = "https://farm\(String(viewViewModel.farm)).staticflickr.com/\(viewViewModel.server)/\(viewViewModel.id)_\(viewViewModel.secret).jpg"
+                     imageCell.imageView.kf.indicatorType = .activity
+                     imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
+                     imageCell.imageView.contentMode = .scaleToFill
+                 }
+        }
         return imageCell
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        if let photoArray = photosArray?.photos.photo{
+            return photoArray.count
+        }else{
+            return 3
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -104,9 +112,7 @@ class MainCollectionViewController: UICollectionViewController {
         print("Cell\(indexPath) clicked")
         self.navigationController?.pushViewController(fullImageController, animated: true)
     }
-    
 }
-
 
 extension MainCollectionViewController : UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

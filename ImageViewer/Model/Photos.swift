@@ -19,4 +19,8 @@ struct Photo : Codable {
 struct Image : Codable {
     let id : String
     let title: String
+    let owner: String
+    let farm: Int
+    let server: String
+    let secret: String
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-
+import Kingfisher
 
 class FullImageViewController: UIViewController {
     
@@ -24,6 +24,11 @@ class FullImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        DispatchQueue.main.async {
+            self.fullImageView.kf.indicatorType = .activity
+            self.fullImageView.kf.setImage(with: URL(string: "https://farm66.staticflickr.com/65535/49008542706_c7f6d44d72.jpg"))
+             
+        }
     }
     
     fileprivate func setupView(){
