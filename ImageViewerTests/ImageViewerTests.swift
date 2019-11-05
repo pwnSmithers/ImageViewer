@@ -28,6 +28,16 @@ class ImageViewerTests: XCTestCase {
         let viewModel = PhotosViewModel(model: image)
         XCTAssertNotNil(viewModel)
         
+        XCTAssertEqual(viewModel.id, "20081")
+        XCTAssertEqual(viewModel.title, "Hello this is an awesome image")
+        XCTAssertEqual(viewModel.owner, "2781265")
+        XCTAssertEqual(viewModel.farm, 76)
+        XCTAssertEqual(viewModel.server, "097524")
+        XCTAssertEqual(viewModel.secret, "2187634")
+    }
+    
+    func testUrlGenerator() {
+        guard let image = photos else{return}
         //test if generated URl is equal to expected URL
         let photoUrl = CreateFlikrApiUrl(farm: String(image.farm), server: image.server, id: image.id, secret: image.secret)
         let finalUrl = photoUrl.flickrPhotoUrlConstructor()
