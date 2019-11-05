@@ -27,7 +27,8 @@ class MainCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
-        search(for: "league of legends")
+        //preload some images
+        loadRecentImages()
     }
     
     fileprivate func setupView(){
@@ -45,6 +46,26 @@ class MainCollectionViewController: UICollectionViewController {
             mainSearchBar.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor, constant: 2),
             mainSearchBar.heightAnchor.constraint(equalToConstant: 40)
         ])
+    }
+    
+    fileprivate func loadRecentImages(){
+        networkingProvider.request(.recent) { (result) in
+               switch result{
+               case .success(let response):
+                   do{
+                       let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
+                       self.photosArray = searchResults
+                        
+                       //reload collection view data once data is returned from server
+                       self.collectionView.reloadData()
+                   }catch let error{
+                       print(error)
+                   }
+               case .failure(let error):
+                   print(error)
+                   
+               }
+           }
     }
     
     fileprivate func search(for term: String){

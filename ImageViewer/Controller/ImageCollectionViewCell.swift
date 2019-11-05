@@ -42,7 +42,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
             imageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 10),
            
             titleLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: 5),
-            titleLabel.widthAnchor.constraint(equalToConstant: 100),
+            titleLabel.widthAnchor.constraint(equalToConstant: 350),
             titleLabel.heightAnchor.constraint(equalToConstant: 50),
             titleLabel.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: -5)
         ])
