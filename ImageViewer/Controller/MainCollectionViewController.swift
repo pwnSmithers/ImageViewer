@@ -28,7 +28,7 @@ class MainCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
         setupView()
         //preload some images
-        loadRecentImages()
+        loadImagesFromNetwork(count: 10, callType: .recent)
     }
     
     fileprivate func setupView(){
@@ -48,45 +48,65 @@ class MainCollectionViewController: UICollectionViewController {
         ])
     }
     
-    fileprivate func loadRecentImages(){
-        networkingProvider.request(.recent) { (result) in
-               switch result{
-               case .success(let response):
-                   do{
-                       let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
-                       self.photosArray = searchResults
-                        
-                       //reload collection view data once data is returned from server
-                       self.collectionView.reloadData()
-                   }catch let error{
-                       print(error)
-                   }
-               case .failure(let error):
-                   print(error)
-                   
-               }
-           }
+    
+    fileprivate func loadImagesFromNetwork(count: Int, callType: NetworkingService){
+        networkingProvider.request(callType) { (result) in
+                    switch result{
+                    case .success(let response):
+                        do{
+                            let photoResults = try JSONDecoder().decode(Photos.self, from: response.data)
+                            self.photosArray = photoResults
+                             
+                            //reload collection view data once data is returned from server
+                            self.collectionView.reloadData()
+                        }catch let error{
+                            print(error)
+                        }
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
     }
     
-    fileprivate func search(for term: String){
-        networkingProvider.request(.Search(term: term)) { (result) in
-            switch result{
-            case .success(let response):
-                do{
-                    let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
-                    self.photosArray = searchResults
-                    //reload collection view data once data is returned from server
-                    self.collectionView.reloadData()
-
-                }catch let error{
-                    print(error)
-                }
-            case .failure(let error):
-                print(error)
-                
-            }
-        }
-    }
+//    fileprivate func loadRecentImages(){
+//        networkingProvider.request(.recent) { (result) in
+//               switch result{
+//               case .success(let response):
+//                   do{
+//                       let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
+//                       self.photosArray = searchResults
+//
+//                       //reload collection view data once data is returned from server
+//                       self.collectionView.reloadData()
+//                   }catch let error{
+//                       print(error)
+//                   }
+//               case .failure(let error):
+//                   print(error)
+//
+//               }
+//           }
+//    }
+    
+//    fileprivate func search(for term: String){
+//        networkingProvider.request(.Search(term: term)) { (result) in
+//            switch result{
+//            case .success(let response):
+//                do{
+//                    let searchResults = try JSONDecoder().decode(Photos.self, from: response.data)
+//                    self.photosArray = searchResults
+//                    //reload collection view data once data is returned from server
+//                    self.collectionView.reloadData()
+//
+//                }catch let error{
+//                    print(error)
+//                }
+//            case .failure(let error):
+//                print(error)
+//
+//            }
+//        }
+//    }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
