@@ -7,6 +7,7 @@ target 'ImageViewer' do
 
   # Pods for ImageViewer
   pod 'Moya', '~> 13.0'	
+  pod 'Kingfisher', '~> 5.0'		
 
   target 'ImageViewerTests' do
     inherit! :search_paths
