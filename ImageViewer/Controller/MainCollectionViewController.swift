@@ -17,7 +17,7 @@ enum ApiCallType {
 }
 
 class MainCollectionViewController: UICollectionViewController {
-
+    
     lazy var mainSearchBar : UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
@@ -37,6 +37,7 @@ class MainCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setupNavigationBar()
         //preload some images
         apiCallType = .recent
         loadImagesFromNetwork(callType: .recent(count: pageCount))
@@ -44,7 +45,7 @@ class MainCollectionViewController: UICollectionViewController {
     
     fileprivate func setupView(){
         collectionView.backgroundColor = .white
-        navigationItem.title = "Flickr"
+
         
         mainSearchBar.delegate = self
         
@@ -61,6 +62,25 @@ class MainCollectionViewController: UICollectionViewController {
         ])
     }
     
+    fileprivate func setupNavigationBar(){
+        navigationItem.title = "Flickr"
+        let searchButton = UIBarButtonItem(image: UIImage(named: "search"), style: .plain, target: self, action: #selector(searchTapped(sender:)))
+        navigationItem.rightBarButtonItem = searchButton
+    }
+    
+    @objc func searchTapped(sender: UIBarButtonItem){
+        if mainSearchBar.isHidden{
+            mainSearchBar.isHidden = false
+        }
+        navigationItem.titleView = mainSearchBar
+        let cancelBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelSearch(sender:)))
+        navigationItem.rightBarButtonItem = cancelBarButtonItem
+    }
+    
+    @objc func cancelSearch(sender: UIBarButtonItem){
+        setupNavigationBar()
+        mainSearchBar.isHidden = true
+    }
     
     fileprivate func loadImagesFromNetwork(callType: NetworkingService){
         networkingProvider.request(callType) { (result) in
@@ -172,6 +192,8 @@ extension MainCollectionViewController : UISearchBarDelegate{
             pageCount = 0
             apiCallType = .search
             loadImagesFromNetwork(callType: .Search(term: searchText, count: 1))
+            searchBar.resignFirstResponder()
         }
     }
+    
 }

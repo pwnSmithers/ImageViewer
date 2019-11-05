@@ -19,7 +19,6 @@ class ImageCollectionViewCell: UICollectionViewCell {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "polar bear"
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -28,7 +27,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
     let imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(named: "bear")
+        image.image = UIImage(named: "placeholder")
         return image
     }()
     
