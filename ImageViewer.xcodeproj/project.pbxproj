@@ -22,6 +22,7 @@
 		966C2B1423704AB0009BBE65 /* MainCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966C2B1323704AB0009BBE65 /* MainCollectionViewController.swift */; };
 		966C2B16237056E2009BBE65 /* ImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966C2B15237056E2009BBE65 /* ImageCollectionViewCell.swift */; };
 		966C2B1823706C45009BBE65 /* FullImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966C2B1723706C45009BBE65 /* FullImageViewController.swift */; };
+		969B6E3E2372CC6F00CBF659 /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 969B6E3D2372CC6F00CBF659 /* Readme.md */; };
 		C006E6EF66E3852D41886DA5 /* Pods_ImageViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3767002D461DB71911EEDFC8 /* Pods_ImageViewer.framework */; };
 		C5EF1AEBBBB520E3E411F351 /* Pods_ImageViewerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAB55A209CC7C9F3BD125EE8 /* Pods_ImageViewerTests.framework */; };
 /* End PBXBuildFile section */
@@ -71,6 +72,7 @@
 		966C2B1323704AB0009BBE65 /* MainCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCollectionViewController.swift; sourceTree = "<group>"; };
 		966C2B15237056E2009BBE65 /* ImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		966C2B1723706C45009BBE65 /* FullImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullImageViewController.swift; sourceTree = "<group>"; };
+		969B6E3D2372CC6F00CBF659 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		CAB55A209CC7C9F3BD125EE8 /* Pods_ImageViewerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ImageViewerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB6149F45691F3945ED8AE48 /* Pods-ImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageViewer.debug.xcconfig"; path = "Target Support Files/Pods-ImageViewer/Pods-ImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -119,6 +121,7 @@
 		9619C34123703BE70001BFD2 = {
 			isa = PBXGroup;
 			children = (
+				969B6E3D2372CC6F00CBF659 /* Readme.md */,
 				9619C34C23703BE70001BFD2 /* ImageViewer */,
 				9619C36323703BE90001BFD2 /* ImageViewerTests */,
 				9619C36E23703BE90001BFD2 /* ImageViewerUITests */,
@@ -346,6 +349,7 @@
 			files = (
 				9619C35A23703BE90001BFD2 /* LaunchScreen.storyboard in Resources */,
 				9619C35723703BE90001BFD2 /* Assets.xcassets in Resources */,
+				969B6E3E2372CC6F00CBF659 /* Readme.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

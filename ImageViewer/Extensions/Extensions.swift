@@ -20,13 +20,3 @@ extension UIView{
         self.layer.cornerRadius = 15
     }
 }
-
-struct CreateFlikrApiUrl {
-    let farm : String
-    let server : String
-    let id : String
-    let secret : String
-      func flickrPhotoUrlConstructor() -> URL{
-          return URL(string: "https://farm\(String(farm)).staticflickr.com/\(server)/\(id)_\(secret).jpg")!
-      }
-}

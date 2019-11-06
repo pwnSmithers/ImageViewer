@@ -27,6 +27,7 @@ class FullImageViewController: UIViewController {
    
     }
     
+// MARK: - Initializer for view controller expecting a URl
     init(photoUrl: URL?) {
         self.photoUrl = photoUrl
         super.init(nibName: nil, bundle: nil)
@@ -45,7 +46,7 @@ class FullImageViewController: UIViewController {
            self.fullImageView.kf.setImage(with: withURl)
            }
     }
-    
+// MARK: - Setup view
     fileprivate func setupView(){
         view.backgroundColor = .white
         view.addSubview(fullImageView)
