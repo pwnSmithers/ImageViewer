@@ -28,8 +28,8 @@ class MainCollectionViewController: UICollectionViewController {
     let cellIdentifier = "cellIdentifier"
     let headerCellIdentifier = "headerCellIdentifier"
     let networkingProvider = MoyaProvider<NetworkingService>()
-    var photosArray : Photos?
     var photoArray = [Image]()
+    //count to keep track of current page returned from flickr server
     var pageCount = 1
     var searchTerm : String?
     var apiCallType : ApiCallType?
@@ -45,21 +45,10 @@ class MainCollectionViewController: UICollectionViewController {
     
     fileprivate func setupView(){
         collectionView.backgroundColor = .white
-
-        
         mainSearchBar.delegate = self
         
         navigationController?.navigationBar.tintColor = .black
         collectionView.register(ImageCollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
-        collectionView.register(UICollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerCellIdentifier)
-        
-        collectionView.addSubview(mainSearchBar)
-        collectionView.addConstraints([
-            mainSearchBar.topAnchor.constraint(equalTo: collectionView.topAnchor, constant: 2),
-            mainSearchBar.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor, constant: 2),
-            mainSearchBar.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor, constant: 2),
-            mainSearchBar.heightAnchor.constraint(equalToConstant: 40)
-        ])
     }
     
     fileprivate func setupNavigationBar(){
@@ -69,6 +58,7 @@ class MainCollectionViewController: UICollectionViewController {
     }
     
     @objc func searchTapped(sender: UIBarButtonItem){
+        //unhide searchbar if it was hidden on Cancel search
         if mainSearchBar.isHidden{
             mainSearchBar.isHidden = false
         }
@@ -80,8 +70,10 @@ class MainCollectionViewController: UICollectionViewController {
     @objc func cancelSearch(sender: UIBarButtonItem){
         setupNavigationBar()
         mainSearchBar.isHidden = true
+        mainSearchBar.resignFirstResponder()
     }
     
+// MARK: - Make calls to the network for images from Flickr
     fileprivate func loadImagesFromNetwork(callType: NetworkingService){
         networkingProvider.request(callType) { (result) in
                     switch result{
@@ -92,7 +84,6 @@ class MainCollectionViewController: UICollectionViewController {
                             imagesArray.forEach {
                                 self.photoArray.append($0)
                             }
-                            print(self.photoArray)
                             //reload collection view data once data is returned from server
                             self.collectionView.reloadData()
                         }catch let error{
@@ -103,8 +94,9 @@ class MainCollectionViewController: UICollectionViewController {
                     }
                 }
     }
-    
+// MARK: - Load more images from flickr for lazy loading
     fileprivate func loadMoreImages(){
+            //increment page number every time you load more images
             pageCount += 1
             switch apiCallType {
                    case .recent:
@@ -114,22 +106,29 @@ class MainCollectionViewController: UICollectionViewController {
                        loadImagesFromNetwork(callType: .Search(term: search, count: pageCount))
                     }
                    case .none:
-                       print("Nothing should happen")
+                       return
             }
     }
     
+ // MARK: - Populate collection view cells
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let imageCell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as! ImageCollectionViewCell
-        guard !photoArray.isEmpty else{return imageCell}
+        guard !photoArray.isEmpty else{
+            imageCell.titleLabel.text = "Something went horribly wrong"
+            return imageCell
+        }
         let viewModel = PhotosViewModel(model: photoArray[indexPath.row])
-                     DispatchQueue.main.async {
-                         imageCell.titleLabel.text = viewModel.title
-                          let photoUrl = "https://farm\(String(viewModel.farm)).staticflickr.com/\(viewModel.server)/\(viewModel.id)_\(viewModel.secret).jpg"
-                         imageCell.imageView.kf.indicatorType = .activity
-                         imageCell.imageView.kf.setImage(with: URL(string: photoUrl), placeholder: UIImage(named: "placeholder"))
-                         imageCell.imageView.contentMode = .scaleToFill
-                        imageCell.setCellShadow()
-                     }
+        DispatchQueue.main.async {
+        imageCell.titleLabel.text = viewModel.title
+            
+        let photoUrl = CreateFlikrApiUrl(farm: String(viewModel.farm), server: viewModel.server, id: viewModel.id, secret: viewModel.secret)
+        let finalUrl = photoUrl.flickrPhotoUrlConstructor()
+        imageCell.imageView.kf.indicatorType = .activity
+        imageCell.imageView.kf.setImage(with: finalUrl, placeholder: UIImage(named: "placeholder"))
+        
+        imageCell.imageView.contentMode = .scaleToFill
+        imageCell.setCellShadow()
+                                }
         return imageCell
     }
     
@@ -137,27 +136,11 @@ class MainCollectionViewController: UICollectionViewController {
         guard !photoArray.isEmpty else{return 3}
         return photoArray.count
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: view.frame.width, height: 80)
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerCellIdentifier, for: indexPath)
-        
-        header.addSubview(mainSearchBar)
-     
-        mainSearchBar.leftAnchor.constraint(equalTo: header.leftAnchor).isActive = true
-        mainSearchBar.rightAnchor.constraint(equalTo: header.rightAnchor).isActive = true
-        mainSearchBar.topAnchor.constraint(equalTo: header.topAnchor).isActive = true
-        mainSearchBar.bottomAnchor.constraint(equalTo: header.bottomAnchor).isActive = true
-      return header
-    }
-    
+// MARK: - Segue to full image
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard !photoArray.isEmpty else{return}
-        let photo = photoArray[indexPath.row]
-        let photoUrl = CreateFlikrApiUrl(farm: String(photo.farm), server: photo.server, id: photo.id, secret: photo.secret)
+        let viewModel = PhotosViewModel(model: photoArray[indexPath.row])
+        let photoUrl = CreateFlikrApiUrl(farm: String(viewModel.farm), server: viewModel.server, id: viewModel.id, secret: viewModel.secret)
         let finalUrl = photoUrl.flickrPhotoUrlConstructor()
         let fullImageController = FullImageViewController(photoUrl: finalUrl)
         self.navigationController?.pushViewController(fullImageController, animated: true)
@@ -168,12 +151,11 @@ class MainCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard !photoArray.isEmpty else{return}
         let imageArrayCount = photoArray.count
+        //if current cell is equal to the total number of images - 3, load more images
         if indexPath.row == imageArrayCount - 3 {
             loadMoreImages()
         }
     }
-    
-    
 }
 
 extension MainCollectionViewController : UICollectionViewDelegateFlowLayout{
@@ -182,6 +164,7 @@ extension MainCollectionViewController : UICollectionViewDelegateFlowLayout{
     }
 }
 
+// MARK: - SearchBar logic
 extension MainCollectionViewController : UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let searchText = searchBar.text{
@@ -195,5 +178,4 @@ extension MainCollectionViewController : UISearchBarDelegate{
             searchBar.resignFirstResponder()
         }
     }
-    
 }
