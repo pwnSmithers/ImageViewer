@@ -39,7 +39,7 @@ class ImageViewerTests: XCTestCase {
     func testUrlGenerator() {
         guard let image = photos else{return}
         //test if generated URl is equal to expected URL
-        let photoUrl = CreateFlikrApiUrl(farm: String(image.farm), server: image.server, id: image.id, secret: image.secret)
+        let photoUrl = CreateFlikrPhotoApiUrl(farm: String(image.farm), server: image.server, id: image.id, secret: image.secret)
         let finalUrl = photoUrl.flickrPhotoUrlConstructor()
         print(finalUrl)
         let expectedURL = URL(string: "https://farm76.staticflickr.com/097524/20081_2187634.jpg")

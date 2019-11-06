@@ -121,7 +121,7 @@ class MainCollectionViewController: UICollectionViewController {
         DispatchQueue.main.async {
         imageCell.titleLabel.text = viewModel.title
             
-        let photoUrl = CreateFlikrApiUrl(farm: String(viewModel.farm), server: viewModel.server, id: viewModel.id, secret: viewModel.secret)
+        let photoUrl = CreateFlikrPhotoApiUrl(farm: String(viewModel.farm), server: viewModel.server, id: viewModel.id, secret: viewModel.secret)
         let finalUrl = photoUrl.flickrPhotoUrlConstructor()
         imageCell.imageView.kf.indicatorType = .activity
         imageCell.imageView.kf.setImage(with: finalUrl, placeholder: UIImage(named: "placeholder"))
@@ -140,7 +140,7 @@ class MainCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard !photoArray.isEmpty else{return}
         let viewModel = PhotosViewModel(model: photoArray[indexPath.row])
-        let photoUrl = CreateFlikrApiUrl(farm: String(viewModel.farm), server: viewModel.server, id: viewModel.id, secret: viewModel.secret)
+        let photoUrl = CreateFlikrPhotoApiUrl(farm: String(viewModel.farm), server: viewModel.server, id: viewModel.id, secret: viewModel.secret)
         let finalUrl = photoUrl.flickrPhotoUrlConstructor()
         let fullImageController = FullImageViewController(photoUrl: finalUrl)
         self.navigationController?.pushViewController(fullImageController, animated: true)

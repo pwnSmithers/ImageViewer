@@ -15,18 +15,17 @@ enum NetworkingService{
 }
 
 extension NetworkingService: TargetType {
-
+    
     var baseURL: URL {
         switch self {
         case .Search(let term, let count):
-            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(GlobalConstants.ApiKey)&text=\(term)&per_page=10&page=\(count)&format=json&nojsoncallback=1"
-            let finalURL = url.replacingOccurrences(of: " ", with: "+")
-            return URL(string: finalURL)!
-            
+            let searchURL = CreateBaseURL(ApiKey: GlobalConstants.ApiKey, count: count, term: term)
+            let finalSearchUrl = searchURL.flickrBaseURLConstructor()
+            return finalSearchUrl
         case .recent(let count):
-            let url = "https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=\(GlobalConstants.ApiKey)&per_page=10&page=\(count)&format=json&nojsoncallback=1"
-            let finalURL = url.replacingOccurrences(of: " ", with: "+")
-            return URL(string: finalURL)!
+            let recentURL = CreateBaseURL(ApiKey: GlobalConstants.ApiKey, count: count, term: nil)
+            let finalRecentUrl = recentURL.flickrBaseURLConstructor()
+            return finalRecentUrl
         }
     }
     
