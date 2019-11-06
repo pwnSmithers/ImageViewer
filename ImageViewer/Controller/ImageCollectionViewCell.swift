@@ -30,7 +30,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
         image.image = UIImage(named: "placeholder")
         return image
     }()
-    
+// MARK: - Setup cell view
     fileprivate func setupView(){
         addSubview(imageView)
         addSubview(titleLabel)
