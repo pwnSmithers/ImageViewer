@@ -30,9 +30,11 @@ struct CreateBaseURL{
     
     func flickrBaseURLConstructor() -> URL{
         if let searchTerm = term {
-            return URL(string:  "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(ApiKey)&text=\(searchTerm)&per_page=10&page=\(count)&format=json&nojsoncallback=1")!
+            let urlString = "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=\(ApiKey)&text=\(searchTerm)&per_page=10&page=\(count)&format=json&nojsoncallback=1".replacingOccurrences(of: " ", with: "+")
+            return URL(string:  urlString)!
         }else{
-            return URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=\(ApiKey)&per_page=10&page=\(count)&format=json&nojsoncallback=1")!
+            let urlString = "https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=\(ApiKey)&per_page=10&page=\(count)&format=json&nojsoncallback=1".replacingOccurrences(of: " ", with: "+")
+            return URL(string: urlString)!
         }
     }
 }

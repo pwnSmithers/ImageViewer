@@ -21,6 +21,7 @@ extension NetworkingService: TargetType {
         case .Search(let term, let count):
             let searchURL = CreateBaseURL(ApiKey: GlobalConstants.ApiKey, count: count, term: term)
             let finalSearchUrl = searchURL.flickrBaseURLConstructor()
+            print(finalSearchUrl)
             return finalSearchUrl
         case .recent(let count):
             let recentURL = CreateBaseURL(ApiKey: GlobalConstants.ApiKey, count: count, term: nil)
